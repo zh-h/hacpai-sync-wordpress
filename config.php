@@ -8,5 +8,6 @@ $client = array('title' => '我的个人博客', //博客抬头
 /**
  * 评论同步接口
  * 在 https://hacpai.com/settings#soloCmtURL 配置
- * 参数为 YOUR_BLOG_URI/wp-content/plugins/hacpai-sync-wordpress/sync.php
+ * 参数为 YOUR_BLOG_URI/?hacpai-api=sync-comment
+ * Wordpress 评论默认要经过审核，可以更改审核规则
  */

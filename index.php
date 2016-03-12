@@ -130,3 +130,34 @@ function post_comment($commentdata)
 
 add_filter('preprocess_comment', 'post_comment');
 
+/**
+ * 黑客派同步到博客
+ * 指定参数 hacpai-api = sync-comment
+ */
+function sync_comment()
+{
+    if ($_GET['hacpai-api'] === 'sync-comment') {//判断是不是同步的接口
+        $data = json_decode(file_get_contents("php://input"));
+        $comment = $data->comment;
+        $key = $data->client->key;
+        if ($key == $GLOBALS['client']['key']) {//判断是否配置了正确的key
+            $commentdata = array(
+                'comment_post_ID' => $comment->articleId,
+                'comment_author' => $comment->authorName,
+                'comment_author_email' => $comment->authorEmail,
+                'comment_author_url' => $comment->authorURL,
+                'comment_content' => $comment->content,
+                'comment_type' => '', //empty for regular comments, 'pingback' for pingbacks, 'trackback' for trackbacks
+                'comment_parent' => 0, //0 if it's not a reply to another comment; if it's a reply, mention the parent comment ID here
+                'user_id' => 0, //passing current user ID or any predefined as per the demand
+            );
+            //Insert new comment and get the comment ID
+            $comment_id = wp_new_comment($commentdata);
+            test($comment_id);
+        } else {
+            echo 'Key not match';
+        }
+    }
+}
+
+add_action('template_redirect', 'sync_comment');
