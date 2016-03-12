@@ -1,0 +1,15 @@
+{
+    "comment": {
+        "id": "1165070220220", 
+        "articleId": "1165070220099", 
+        "content": "Test comment", 
+        "authorName": "Daniel", 
+        "authorEmail": "dl88250@gmail.com"
+    }, 
+    "client": {
+        "title": "我的个人博客", 
+        "host": "http://xxx.com", 
+        "email": "xxoo@outlook.com", 
+        "key": "xxoo"
+    }
+}

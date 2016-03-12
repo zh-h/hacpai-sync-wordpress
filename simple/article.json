@@ -1,0 +1,15 @@
+{
+    "article": {
+        "id": "1165070220099", 
+        "title": "这是一篇测试文章666", 
+        "permalink": "/test-post", 
+        "tags": "tag1, tag2", 
+        "content": "Test"
+    }, 
+    "client": {
+        "title": "我的个人博客", 
+        "host": "http://xxx.com", 
+        "email": "xxoo@outlook.com", 
+        "key": "xxoo"
+    }
+}

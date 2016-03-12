@@ -1,0 +1,12 @@
+{
+    "comment": {
+        "articleId": "", 
+        "content": "",
+        "authorName": "", 
+        "authorEmail": "", 
+        "authorURL": ""
+    }, 
+    "client": {
+        "key": ""
+    }
+}
