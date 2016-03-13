@@ -12,7 +12,7 @@
 1. 放置插件到 Wordpress 的插件目录;
 2. 在设置面板进行设置.
 
-![showoff](https://github.com/zh-h/hacpai-sync-wordpress/tree/master/images/showoff.png)
+![showoff](https://raw.githubusercontent.com/zh-h/hacpai-sync-wordpress/master/images/showoff.png)
 
 ## TODO
 * [x] 配置面板
