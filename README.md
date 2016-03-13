@@ -10,11 +10,13 @@
 
 ##  使用
 1. 放置插件到 Wordpress 的插件目录;
-2. 使用编辑器或者在 Wordpress 管理面板编辑`config.php`文件
+2. 在设置面板进行设置.
+
+![showoff](https://github.com/zh-h/hacpai-sync-wordpress/tree/master/images/showoff.png)
 
 ## TODO
-* [] 配置面板
-* [] 错误反馈
+* [x] 配置面板
+* [ ] 错误反馈
 
 ###### Plugin License
 > Copyright © 2016 [zonghua](https://applehater.cn)  
