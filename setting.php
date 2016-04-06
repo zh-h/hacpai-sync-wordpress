@@ -89,6 +89,7 @@ function hacpai_sync_wordpress_setting_page()
                                 } ?>>关闭
                             </option>
                         </select>
+                        <p class="description" id="sync_category-description">客户端接口：<?php echo get_bloginfo('url'); ?>/?hacpai-api=sync-comment</p>
                     </td>
                 </tr>
                 </tbody>
