@@ -80,12 +80,6 @@ function commentdata2comment($commentdata)
 
 }
 
-function test($obj)
-{
-    echo json_encode($obj);
-    exit();
-}
-
 /**
  * 发布文章
  * @param  int $post_id 文章编号
@@ -168,10 +162,12 @@ function sync_comment()
                 );
                 //Insert new comment and get the comment ID
                 $comment_id = wp_new_comment($commentdata);
-                test($comment_id);
+                exit(json_encode($comment_id));
+            } else {
+                exit('Key not match');
             }
         } else {
-            echo 'Key not match';
+            exit('Method not allowed');
         }
     }
 }
