@@ -10,37 +10,38 @@ Description: 同步您的博客内容到黑客派社区
 Author: zonghua
 Version: 1.0
 Author URI: http://applehater.cn/
-*/
+ */
 
 require 'setting.php';
 
 define('URL_ARTICLE', 'http://rhythm.b3log.org/api/article');
 define('URL_COMMENT', 'http://rhythm.b3log.org/api/comment');
 
-$client = array('title' => esc_attr(get_option('title')), //博客抬头
-    'host' => esc_attr(get_option('host')), //博客域名
+$client = array(
+    'title' => esc_attr(get_option('title')), //博客抬头
+    'host'  => esc_attr(get_option('host')), //博客域名
     'email' => esc_attr(get_option('email')), //需要和 hacpai 的账户一致
-    'key' => esc_attr(get_option('key'))); //在 https://hacpai.com/settings#soloKey 进行设置
-$sync_category = esc_attr(get_option('sync_category'));//同步选项 {'0':'关闭';'1':'博客到黑客派';'2':'双向'}
+    'key'   => esc_attr(get_option('key')), //在 https://hacpai.com/settings#soloKey 进行设置
+);
+$sync_category = esc_attr(get_option('sync_category')); //同步选项 {'0':'关闭';'1':'博客到黑客派';'2':'双向'}
 
 class Comment
 {
-    var $id;
-    var $articleId;
-    var $content;
-    var $authorName;
-    var $authorEmail;
+    public $id;
+    public $articleId;
+    public $content;
+    public $authorName;
+    public $authorEmail;
 }
 
 class Article
 {
-    var $id;
-    var $title;
-    var $permalink;
-    var $tags;
-    var $content;
+    public $id;
+    public $title;
+    public $permalink;
+    public $tags;
+    public $content;
 }
-
 
 function http_post($URL, $data)
 {
@@ -49,8 +50,8 @@ function http_post($URL, $data)
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($data))
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($data))
     );
     $result = curl_exec($ch);
     return $result;
@@ -58,23 +59,21 @@ function http_post($URL, $data)
 
 function post2article($post)
 {
-    $article = new Article();
-    $article->id = $post->ID;
-    //$article->id = '1165070220000';
-    $article->title = $post->post_title;
+    $article            = new Article();
+    $article->id        = $post->ID;
+    $article->title     = $post->post_title;
     $article->permalink = '/' . $post->post_title;
-    $article->content = $post->post_content;
-    $article->tags = 'API';
+    $article->content   = $post->post_content;
+    $article->tags      = 'API';
     return $article;
 }
 
 function commentdata2comment($commentdata)
 {
-    $comment = new Comment();
-    $comment->articleId = $commentdata['comment_post_ID'];
-    //$comment->articleId = '1165070220000';
-    $comment->content = $commentdata['comment_content'];
-    $comment->authorName = $commentdata['comment_author'];
+    $comment              = new Comment();
+    $comment->articleId   = $commentdata['comment_post_ID'];
+    $comment->content     = $commentdata['comment_content'];
+    $comment->authorName  = $commentdata['comment_author'];
     $comment->authorEmail = $commentdata['comment_author_email'];
     return $comment;
 
@@ -87,11 +86,13 @@ function commentdata2comment($commentdata)
  */
 function post_article($post_id, $post)
 {
-    if ($GLOBALS['sync_category'] != '0') {//同步没有关闭
-
+    if ($GLOBALS['sync_category'] != '0') {
+        //同步没有关闭
         $article = post2article($post);
-        $data = array('article' => $article,
-            'client' => $GLOBALS['client']);
+        $data    = array(
+            'article' => $article,
+            'client'  => $GLOBALS['client'],
+        );
 
         $response = http_post(URL_ARTICLE, json_encode($data));
     }
@@ -107,12 +108,15 @@ add_action('publish_post', 'post_article', 10, 2);
  */
 function update_article($post_id, $post, $update)
 {
-    if ($GLOBALS['sync_category'] != '0') {//同步没有关闭
-
-        if ($post->post_status !== 'draft' && $post->post_status !== 'auto-draft') {//如果不是草稿并且不是新建文章的自动草稿
+    if ($GLOBALS['sync_category'] != '0') {
+        //同步没有关闭
+        if ($post->post_status !== 'draft' && $post->post_status !== 'auto-draft') {
+            //如果不是草稿并且不是新建文章的自动草稿
             $article = post2article($post);
-            $data = array('article' => $article,
-                'client' => $GLOBALS['client']);
+            $data    = array(
+                'article' => $article,
+                'client'  => $GLOBALS['client'],
+            );
             $response = http_post(URL_ARTICLE, json_encode($data));
         }
     }
@@ -126,11 +130,13 @@ add_action('wp_insert_post', 'update_article', 10, 3);
  */
 function post_comment($commentdata)
 {
-    if ($GLOBALS['sync_category'] != '0') {//同步没有关闭
-
+    if ($GLOBALS['sync_category'] != '0') {
+        //同步没有关闭
         $comment = commentdata2comment($commentdata);
-        $data = array('comment' => $comment,
-            'client' => $GLOBALS['client']);
+        $data    = array(
+            'comment' => $comment,
+            'client'  => $GLOBALS['client'],
+        );
         $response = http_post(URL_COMMENT, json_encode($data));
     }
     return $commentdata;
@@ -144,24 +150,32 @@ add_filter('preprocess_comment', 'post_comment');
  */
 function sync_comment()
 {
-    if ($_GET['hacpai-api'] === 'sync-comment') {//判断是不是同步的接口
-        if ($GLOBALS['sync_category'] == '2') {//是双向同步的设置
-            $data = json_decode(file_get_contents("php://input"));
+    if ($_GET['hacpai-api'] === 'sync-comment') {
+        //判断是不是同步的接口
+        if ($GLOBALS['sync_category'] == '2') {
+            //是双向同步的设置
+            $data    = json_decode(file_get_contents("php://input"));
             $comment = $data->comment;
-            $key = $data->client->key;
-            if ($key == $GLOBALS['client']['key']) {//判断是否配置了正确的key
+            $key     = $data->client->key;
+            if ($key == $GLOBALS['client']['key']) {
+                //判断是否配置了正确的key
                 $commentdata = array(
-                    'comment_post_ID' => $comment->articleId,
-                    'comment_author' => $comment->authorName,
+                    'comment_post_ID'      => $comment->articleId,
+                    'comment_author'       => $comment->authorName,
                     'comment_author_email' => $comment->authorEmail,
-                    'comment_author_url' => $comment->authorURL,
-                    'comment_content' => $comment->content,
-                    'comment_type' => '', //empty for regular comments, 'pingback' for pingbacks, 'trackback' for trackbacks
-                    'comment_parent' => 0, //0 if it's not a reply to another comment; if it's a reply, mention the parent comment ID here
-                    'user_id' => 0, //passing current user ID or any predefined as per the demand
+                    'comment_author_url'   => $comment->authorURL,
+                    'comment_content'      => $comment->content,
+                    'comment_type'         => '', //empty for regular comments, 'pingback' for pingbacks, 'trackback' for trackbacks
+                    'comment_parent'       => 0, //0 if it's not a reply to another comment; if it's a reply, mention the parent comment ID here
+                    'user_id'              => 0, //passing current user ID or any predefined as per the demand
+                    'comment_author_IP'    => '127.0.0.1',
+                    'comment_agent'        => 'Hacpai/B3log Sync',
+                    'comment_date'         => current_time('mysql'),
+                    'comment_approved'     => 1,
                 );
                 //Insert new comment and get the comment ID
-                $comment_id = wp_new_comment($commentdata);
+                $comment_id = wp_insert_comment($commentdata);
+
                 exit(json_encode($comment_id));
             } else {
                 exit('Key not match');
