@@ -168,9 +168,14 @@ function sync_comment()
                     'comment_type'         => '', //empty for regular comments, 'pingback' for pingbacks, 'trackback' for trackbacks
                     'comment_parent'       => 0, //0 if it's not a reply to another comment; if it's a reply, mention the parent comment ID here
                     'user_id'              => 0, //passing current user ID or any predefined as per the demand
+                    'comment_author_IP'    => '127.0.0.1',
+                    'comment_agent'        => 'Hacpai/B3log Sync',
+                    'comment_date'         => current_time('mysql'),
+                    'comment_approved'     => 1,
                 );
                 //Insert new comment and get the comment ID
-                $comment_id = wp_new_comment($commentdata);
+                $comment_id = wp_insert_comment($commentdata);
+
                 exit(json_encode($comment_id));
             } else {
                 exit('Key not match');
