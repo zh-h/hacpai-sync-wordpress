@@ -64,7 +64,7 @@ function hacpai_sync_wordpress_setting_page()
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="sync_category">选择同步 <?=$sync_category?></label></th>
+                    <th scope="row"><label for="sync_category">选择同步</label></th>
                     <td>
                         <select name="sync_category" id="sync_category" class="postform">
                             <option class="level-0" value="2"<?=($sync_category == '2') ? ' selected="selected"' : ''?>>双向
