@@ -1,14 +1,14 @@
 <?php
 /**
  * @package hacpai-sync-wordpress
- * @version 1.0
+ * @version 1.10
  */
 /*
 Plugin Name: Hacpai Sync Wordpress
 Plugin URI: http://wordpress.org/plugins/hacpai-sync-wordpress/
 Description: 同步您的博客内容到黑客派社区
 Author: zonghua
-Version: 1.0
+Version: 1.10
 Author URI: http://applehater.cn/
  */
 
