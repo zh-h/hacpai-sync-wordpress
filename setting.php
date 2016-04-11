@@ -14,7 +14,10 @@ function register_sync_setting()
     register_setting('hacpai-sync-wordpress-setting_options_group', 'host');
     register_setting('hacpai-sync-wordpress-setting_options_group', 'email');
     register_setting('hacpai-sync-wordpress-setting_options_group', 'key');
-    register_setting('hacpai-sync-wordpress-setting_options_group', 'sync_category');
+    register_setting('hacpai-sync-wordpress-setting_options_group', 'post_article');
+    register_setting('hacpai-sync-wordpress-setting_options_group', 'update_article');
+    register_setting('hacpai-sync-wordpress-setting_options_group', 'post_comment');
+    register_setting('hacpai-sync-wordpress-setting_options_group', 'sync_comment');
 }
 
 function hacpai_sync_wordpress_setting_page()
@@ -66,14 +69,32 @@ function hacpai_sync_wordpress_setting_page()
                 <tr>
                     <th scope="row"><label for="sync_category">选择同步</label></th>
                     <td>
-                        <select name="sync_category" id="sync_category" class="postform">
-                            <option class="level-0" value="2"<?=($sync_category == '2') ? ' selected="selected"' : ''?>>双向
-                            </option>
-                            <option class="level-0" value="1" <?=($sync_category == '1') ? ' selected="selected"' : ''?>>博客到黑客派
-                            </option>
-                            <option class="level-0" value="0"<?=($sync_category == '0') ? ' selected="selected"' : ''?>>关闭
-                            </option>
-                        </select>
+                       <fieldset>
+                           <p>
+                           <label for="post_article">
+                                <input name="post_article" type="checkbox" id="post_article" value="1" 
+                                <?php checked(true, get_option( 'post_article' )); ?>>博客发布博文 -> 社区发布帖子
+                           </label>
+                           </p>
+                           <p>
+                           <label for="update_article">
+                                <input name="update_article" type="checkbox" id="update_article" value="1"
+                                <?php checked(true, get_option( 'update_article' )); ?>>博客更新博文 -> 社区更新帖子
+                           </label>
+                           </p>
+                           <p>
+                           <label for="post_comment">
+                                <input name="post_comment" type="checkbox" id="post_comment" value="1"
+                                <?php checked(true, get_option( 'post_comment' )); ?>>博客发布评论 -> 社区发布回帖
+                           </label>
+                           </p>
+                           <p>
+                           <label for="sync_comment">
+                                <input name="sync_comment" type="checkbox" id="sync_comment" value="1"
+                                <?php checked(true, get_option( 'sync_comment' )); ?>>社区发布回帖 -> 博客发布评论
+                           </label>
+                           </p>
+                        </fieldset>
                         <p class="description" id="sync_category-description">客户端接口：<?=get_bloginfo('url');?>/?hacpai-api=sync-comment</p>
                     </td>
                 </tr>
