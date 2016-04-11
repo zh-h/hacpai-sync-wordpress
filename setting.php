@@ -96,6 +96,7 @@ function hacpai_sync_wordpress_setting_page()
                            </p>
                         </fieldset>
                         <p class="description" id="sync_category-description">客户端接口：<?=get_bloginfo('url');?>/?hacpai-api=sync-comment</p>
+                        <p class="description">请在这里设置查看你的同步接口（全部一致） <a href="https://hacpai.com/settings#soloPostURL" target="_blank">hacpai.com/settings</a></p>
                     </td>
                 </tr>
                 </tbody>
