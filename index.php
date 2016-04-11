@@ -23,7 +23,6 @@ $client = array(
     'email' => esc_attr(get_option('email')), //需要和 hacpai 的账户一致
     'key'   => esc_attr(get_option('key')), //在 https://hacpai.com/settings#soloKey 进行设置
 );
-$sync_category = esc_attr(get_option('sync_category')); //同步选项 {'0':'关闭';'1':'博客到黑客派';'2':'双向'}
 
 class Comment
 {
@@ -64,7 +63,7 @@ function post2article($post)
     $article->title     = $post->post_title;
     $article->permalink = '/' . $post->post_title;
     $article->content   = $post->post_content;
-    $article->tags      = 'API';
+    $article->tags      = '';
     return $article;
 }
 
@@ -86,8 +85,8 @@ function commentdata2comment($commentdata)
  */
 function post_article($post_id, $post)
 {
-    if ($GLOBALS['sync_category'] != '0') {
-        //同步没有关闭
+    if (get_option( 'post_article' )=='1') {
+        //同步发表文章没有关闭
         $article = post2article($post);
         $data    = array(
             'article' => $article,
@@ -108,8 +107,8 @@ add_action('publish_post', 'post_article', 10, 2);
  */
 function update_article($post_id, $post, $update)
 {
-    if ($GLOBALS['sync_category'] != '0') {
-        //同步没有关闭
+    if (get_option( 'update_article' )=='1') {
+        //同步更新文章没有关闭
         if ($post->post_status !== 'draft' && $post->post_status !== 'auto-draft') {
             //如果不是草稿并且不是新建文章的自动草稿
             $article = post2article($post);
@@ -130,8 +129,8 @@ add_action('wp_insert_post', 'update_article', 10, 3);
  */
 function post_comment($commentdata)
 {
-    if ($GLOBALS['sync_category'] != '0') {
-        //同步没有关闭
+    if (get_option( 'post_comment' )=='1') {
+        //同步评论没有关闭
         $comment = commentdata2comment($commentdata);
         $data    = array(
             'comment' => $comment,
@@ -152,8 +151,8 @@ function sync_comment()
 {
     if ($_GET['hacpai-api'] === 'sync-comment') {
         //判断是不是同步的接口
-        if ($GLOBALS['sync_category'] == '2') {
-            //是双向同步的设置
+        if (get_option( 'sync_comment' )=='1') {
+            //开启了社区评论同步到博客
             $data    = json_decode(file_get_contents("php://input"));
             $comment = $data->comment;
             $key     = $data->client->key;
@@ -164,11 +163,11 @@ function sync_comment()
                     'comment_author'       => $comment->authorName,
                     'comment_author_email' => $comment->authorEmail,
                     'comment_author_url'   => $comment->authorURL,
-                    'comment_content'      => $comment->content,
+                    'comment_content'      => $comment->contentHTML,
                     'comment_type'         => '', //empty for regular comments, 'pingback' for pingbacks, 'trackback' for trackbacks
                     'comment_parent'       => 0, //0 if it's not a reply to another comment; if it's a reply, mention the parent comment ID here
                     'user_id'              => 0, //passing current user ID or any predefined as per the demand
-                    'comment_author_IP'    => '127.0.0.1',
+                    'comment_author_IP'    => $comment->ip,
                     'comment_agent'        => 'Hacpai/B3log Sync',
                     'comment_date'         => current_time('mysql'),
                     'comment_approved'     => 1,
