@@ -9,14 +9,15 @@
 * [x] 社区发布回帖 -> 博客发布评论
 
 ## 使用
-1. 放置插件到 Wordpress 的插件目录;
-2. 在设置面板进行设置.
+1. 上传 zip 文件进行安装
+2. 填写配置项
+3. 在黑客派填写对应的配置项
 
 ![showoff](https://raw.githubusercontent.com/zh-h/hacpai-sync-wordpress/master/images/showoff.png)
 
 ## TODO
 * [x] 配置面板
-* [ ] 错误反馈
+* [x] 日志记录
 
 ###### Plugin License
 > Copyright © 2016 [zonghua](https://applehater.cn)  
