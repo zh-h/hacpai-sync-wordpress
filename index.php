@@ -49,8 +49,8 @@ function http_post($URL, $data)
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Content-Type: application/json',
-        'Content-Length: ' . strlen($data))
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($data))
     );
     $result = curl_exec($ch);
     return $result;
@@ -58,33 +58,33 @@ function http_post($URL, $data)
 
 function logging($data, $function_name = '', $file_name = 'response.log')
 {
-    $file_full_name = dirname(__FILE__ ).DIRECTORY_SEPARATOR.'logs'.DIRECTORY_SEPARATOR.$file_name;
-    $content = file_get_contents( $file_full_name);
-    $lines = preg_split('/\n/',$content,null);
-    if (count($lines)>9){
-            array_shift($lines);
+    $file_full_name = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . $file_name;
+    $content = file_get_contents($file_full_name);
+    $lines = preg_split('/\n/', $content, null);
+    if (count($lines) > 9) {
+        array_shift($lines);
     }
-    $content = join($lines,"\n").gmdate("M d Y H:i:s",time()).' @ '.$function_name.' : '.$data; 
-    file_put_contents($file_full_name,$content);
+    $content = join($lines, "\n") . gmdate("M d Y H:i:s", time()) . ' @ ' . $function_name . ' : ' . $data;
+    file_put_contents($file_full_name, $content);
 }
 
 function post2article($post)
 {
-    $article            = new Article();
-    $article->id        = $post->ID;
-    $article->title     = $post->post_title;
+    $article = new Article();
+    $article->id = $post->ID;
+    $article->title = $post->post_title;
     $article->permalink = '/' . $post->post_title;
-    $article->content   = $post->post_content;
-    $article->tags      = '';
+    $article->content = $post->post_content;
+    $article->tags = '';
     return $article;
 }
 
 function commentdata2comment($commentdata)
 {
-    $comment              = new Comment();
-    $comment->articleId   = $commentdata['comment_post_ID'];
-    $comment->content     = $commentdata['comment_content'];
-    $comment->authorName  = $commentdata['comment_author'];
+    $comment = new Comment();
+    $comment->articleId = $commentdata['comment_post_ID'];
+    $comment->content = $commentdata['comment_content'];
+    $comment->authorName = $commentdata['comment_author'];
     $comment->authorEmail = $commentdata['comment_author_email'];
     return $comment;
 
@@ -97,12 +97,12 @@ function commentdata2comment($commentdata)
  */
 function post_article($post_id, $post)
 {
-    if (get_option( 'post_article' )=='1') {
+    if (get_option('post_article') == '1') {
         //同步发表文章没有关闭
         $article = post2article($post);
-        $data    = array(
+        $data = array(
             'article' => $article,
-            'client'  => $GLOBALS['client'],
+            'client' => $GLOBALS['client'],
         );
 
         $response = http_post(URL_ARTICLE, json_encode($data));
@@ -120,14 +120,14 @@ add_action('publish_post', 'post_article', 10, 2);
  */
 function update_article($post_id, $post, $update)
 {
-    if (get_option( 'update_article' )=='1') {
+    if (get_option('update_article') == '1') {
         //同步更新文章没有关闭
         if ($post->post_status !== 'draft' && $post->post_status !== 'auto-draft') {
             //如果不是草稿并且不是新建文章的自动草稿
             $article = post2article($post);
-            $data    = array(
+            $data = array(
                 'article' => $article,
-                'client'  => $GLOBALS['client'],
+                'client' => $GLOBALS['client'],
             );
             $response = http_post(URL_ARTICLE, json_encode($data));
             logging($response, 'update_article');
@@ -143,12 +143,12 @@ add_action('wp_insert_post', 'update_article', 10, 3);
  */
 function post_comment($commentdata)
 {
-    if (get_option( 'post_comment' )=='1') {
+    if (get_option('post_comment') == '1') {
         //同步评论没有关闭
         $comment = commentdata2comment($commentdata);
-        $data    = array(
+        $data = array(
             'comment' => $comment,
-            'client'  => $GLOBALS['client'],
+            'client' => $GLOBALS['client'],
         );
         $response = http_post(URL_COMMENT, json_encode($data));
         logging($response, 'post_comment');
@@ -166,11 +166,11 @@ function sync_comment()
 {
     if ($_GET['hacpai-api'] === 'sync-comment') {
         //判断是不是同步的接口
-        if (get_option( 'sync_comment' )=='1') {
+        if (get_option('sync_comment') == '1') {
             //开启了社区评论同步到博客
-            $data    = json_decode(file_get_contents("php://input"));
+            $data = json_decode(file_get_contents("php://input"));
             $comment = $data->comment;
-            $key     = $data->client->key;
+            $key = $data->client->key;
             if ($key == $GLOBALS['client']['key']) {
                 //判断是否配置了正确的key
                 $commentdata = array(
