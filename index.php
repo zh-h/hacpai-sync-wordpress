@@ -1,14 +1,14 @@
 <?php
 /**
  * @package hacpai-sync-wordpress
- * @version 1.10
+ * @version 1.20
  */
 /*
 Plugin Name: Hacpai Sync Wordpress
 Plugin URI: http://wordpress.org/plugins/hacpai-sync-wordpress/
 Description: 同步您的博客内容到黑客派社区
 Author: zonghua
-Version: 1.10
+Version: 1.20
 Author URI: http://applehater.cn/
  */
 
@@ -56,6 +56,18 @@ function http_post($URL, $data)
     return $result;
 }
 
+function logging($data, $function_name = '', $file_name = 'response.log')
+{
+    $file_full_name = dirname(__FILE__ ).DIRECTORY_SEPARATOR.'logs'.DIRECTORY_SEPARATOR.$file_name;
+    $content = file_get_contents( $file_full_name);
+    $lines = preg_split('/\n/',$content,null);
+    if (count($lines)>9){
+            array_shift($lines);
+    }
+    $content = join($lines,"\n").gmdate("M d Y H:i:s",time()).' @ '.$function_name.' : '.$data; 
+    file_put_contents($file_full_name,$content);
+}
+
 function post2article($post)
 {
     $article            = new Article();
@@ -94,6 +106,7 @@ function post_article($post_id, $post)
         );
 
         $response = http_post(URL_ARTICLE, json_encode($data));
+        logging($response, 'post_article');
     }
 }
 
@@ -117,6 +130,7 @@ function update_article($post_id, $post, $update)
                 'client'  => $GLOBALS['client'],
             );
             $response = http_post(URL_ARTICLE, json_encode($data));
+            logging($response, 'update_article');
         }
     }
 }
@@ -137,6 +151,7 @@ function post_comment($commentdata)
             'client'  => $GLOBALS['client'],
         );
         $response = http_post(URL_COMMENT, json_encode($data));
+        logging($response, 'post_comment');
     }
     return $commentdata;
 }
@@ -178,8 +193,10 @@ function sync_comment()
                 exit(json_encode($comment_id));
             } else {
                 exit('Key not match');
+                logging('Key not match', 'sync_comment');
             }
         } else {
+            logging('Method not allowed', 'sync_comment');
             exit('Method not allowed');
         }
     }
