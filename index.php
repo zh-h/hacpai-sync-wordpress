@@ -189,7 +189,7 @@ function sync_comment()
                 );
                 //Insert new comment and get the comment ID
                 $comment_id = wp_insert_comment($commentdata);
-
+                logging(json_encode($commentdata), 'sync_comment');
                 exit(json_encode($comment_id));
             } else {
                 exit('Key not match');
