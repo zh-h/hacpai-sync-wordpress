@@ -49,9 +49,9 @@ function http_post($URL, $data)
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($data))
-    );
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($data)
+    ));
     $result = curl_exec($ch);
     return $result;
 }
@@ -73,9 +73,16 @@ function post2article($post)
     $article = new Article();
     $article->id = $post->ID;
     $article->title = $post->post_title;
-    $article->permalink = '/' . $post->post_title;
+    $article->permalink = get_permalink($post->ID);
     $article->content = $post->post_content;
-    $article->tags = '';
+
+    $tag_array = array('API', 'B3log');
+    $tags = get_the_tags($post->ID);
+    foreach ($tags as $tag) {
+        $tag_array[] = $tag->name;
+    }
+    $article->tags = implode(', ', $tag_array);
+
     return $article;
 }
 
@@ -87,7 +94,6 @@ function commentdata2comment($commentdata)
     $comment->authorName = $commentdata['comment_author'];
     $comment->authorEmail = $commentdata['comment_author_email'];
     return $comment;
-
 }
 
 /**
