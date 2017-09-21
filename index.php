@@ -73,7 +73,7 @@ function post2article($post)
     $article = new Article();
     $article->id = $post->ID;
     $article->title = $post->post_title;
-    $article->permalink = get_permalink($post->ID);
+    $article->permalink = '/?p=' . $post->ID;
     $article->content = $post->post_content;
 
     $tag_array = array('API', 'B3log');
