@@ -192,7 +192,6 @@ function sync_comment()
                 $commentdata = array(
                     'comment_post_ID'      => $comment->articleId,
                     'comment_author'       => $comment->authorName,
-                    'comment_author_email' => $comment->authorEmail,
                     'comment_author_url'   => $comment->authorURL,
                     'comment_content'      => $comment->contentHTML,
                     'comment_type'         => '', //empty for regular comments, 'pingback' for pingbacks, 'trackback' for trackbacks
