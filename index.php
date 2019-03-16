@@ -23,7 +23,7 @@ $client = array(
     'userName' => esc_attr(get_option('user')), //需要和 hacpai 的账户一致
     'name' => 'WordPress',
     'ver' => get_bloginfo( 'version' ),    
-    'userB3key'   => esc_attr(get_option('key')), //在 https://hacpai.com/settings#b3 进行设置
+    'userB3Key'   => esc_attr(get_option('key')), //在 https://hacpai.com/settings#b3 进行设置
 );
 
 class Comment
