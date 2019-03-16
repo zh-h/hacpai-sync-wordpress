@@ -12,7 +12,7 @@ function register_sync_setting()
 {
     register_setting('hacpai-sync-wordpress-setting_options_group', 'title');
     register_setting('hacpai-sync-wordpress-setting_options_group', 'host');
-    register_setting('hacpai-sync-wordpress-setting_options_group', 'email');
+    register_setting('hacpai-sync-wordpress-setting_options_group', 'user');
     register_setting('hacpai-sync-wordpress-setting_options_group', 'key');
     register_setting('hacpai-sync-wordpress-setting_options_group', 'post_article');
     register_setting('hacpai-sync-wordpress-setting_options_group', 'update_article');
@@ -54,10 +54,10 @@ function hacpai_sync_wordpress_setting_page()
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="email">邮箱</label></th>
+                    <th scope="row"><label for="user">用户名</label></th>
                     <td>
-                        <input name="email" type="text" id="email" value="<?=esc_attr(get_option('email'))?>" class="regular-text ltr">
-                        <p class="description" id="email-description">这个电子邮件地址需要和你在黑客派账户的邮箱一致</p>
+                        <input name="user" type="text" id="user" value="<?=esc_attr(get_option('user'))?>" class="regular-text ltr">
+                        <p class="description" id="user-description">这个用户名需要和你在黑客派账户的用户名一致</p>
                     </td>
                 </tr>
                 <tr>

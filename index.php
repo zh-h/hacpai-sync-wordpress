@@ -14,14 +14,16 @@ Author URI: http://applehater.cn/
 
 require 'setting.php';
 
-define('URL_ARTICLE', 'http://rhythm.b3log.org/api/article');
-define('URL_COMMENT', 'http://rhythm.b3log.org/api/comment');
+define('URL_ARTICLE', 'https://rhythm.b3log.org/api/article');
+define('URL_COMMENT', 'https://rhythm.b3log.org/api/comment');
 
 $client = array(
     'title' => esc_attr(get_option('title')), //博客抬头
     'host'  => esc_attr(get_option('host')), //博客域名
-    'email' => esc_attr(get_option('email')), //需要和 hacpai 的账户一致
-    'key'   => esc_attr(get_option('key')), //在 https://hacpai.com/settings#soloKey 进行设置
+    'userName' => esc_attr(get_option('user')), //需要和 hacpai 的账户一致
+    'name' => 'WordPress',
+    'ver' => get_bloginfo( 'version' ),    
+    'userB3key'   => esc_attr(get_option('key')), //在 https://hacpai.com/settings#b3 进行设置
 );
 
 class Comment
@@ -48,6 +50,7 @@ function http_post($URL, $data)
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);    
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
         'Content-Type: application/json',
         'Content-Length: ' . strlen($data)
@@ -78,11 +81,16 @@ function post2article($post)
 
     $tag_array = array('API', 'B3log');
     $tags = get_the_tags($post->ID);
-    foreach ($tags as $tag) {
-        $tag_array[] = $tag->name;
-    }
-    $article->tags = implode(', ', $tag_array);
+    if($tags){
+        foreach ($tags as $tag) {
+            $tag_array[] = $tag->name;
+        }
+        $article->tags = implode(', ', $tag_array);
 
+    }
+    else{
+        $article->tags = '未分类';
+    }
     return $article;
 }
 
