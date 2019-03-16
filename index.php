@@ -32,7 +32,7 @@ class Comment
     public $articleId;
     public $content;
     public $authorName;
-    public $authorEmail;
+    public $parentId;
 }
 
 class Article
@@ -94,13 +94,14 @@ function post2article($post)
     return $article;
 }
 
-function commentdata2comment($commentdata)
+function commentdata2comment($comment_ID, $commentdata)
 {
     $comment = new Comment();
+    $comment->id = $comment_ID;
     $comment->articleId = $commentdata['comment_post_ID'];
     $comment->content = $commentdata['comment_content'];
     $comment->authorName = $commentdata['comment_author'];
-    $comment->authorEmail = $commentdata['comment_author_email'];
+    $comment->parentId = '';
     return $comment;
 }
 
@@ -154,12 +155,13 @@ add_action('wp_insert_post', 'update_article', 10, 3);
 /**
  * 发表评论
  * @param  array $commentdata 回复的数据
+ * @since WordPress 4.5.0 The $commentdata parameter was added.
  */
-function post_comment($commentdata)
+function post_comment($comment_ID, $comment_approved, $commentdata)
 {
-    if (get_option('post_comment') == '1') {
+    if (get_option('post_comment') == '1' && $comment_approved) {
         //同步评论没有关闭
-        $comment = commentdata2comment($commentdata);
+        $comment = commentdata2comment($comment_ID, $commentdata);
         $data = array(
             'comment' => $comment,
             'client' => $GLOBALS['client'],
@@ -170,7 +172,7 @@ function post_comment($commentdata)
     return $commentdata;
 }
 
-add_filter('preprocess_comment', 'post_comment');
+add_action('comment_post', 'post_comment', 10, 3);
 
 /**
  * 黑客派同步到博客
