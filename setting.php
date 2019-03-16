@@ -50,7 +50,7 @@ function hacpai_sync_wordpress_setting_page()
                     <th scope="row"><label for="host">域名</label></th>
                     <td>
                         <input name="host" type="text" id="host" value="<?=esc_attr(get_option('host'))?>" class="regular-text ltr">
-                        <p class="description" id="host-description">不需要填写 http:// 或者 https:// </p>
+                        <p class="description" id="host-description">需要填写 http:// 或者 https:// </p>
                     </td>
                 </tr>
                 <tr>
