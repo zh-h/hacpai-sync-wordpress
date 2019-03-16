@@ -180,7 +180,7 @@ add_action('comment_post', 'post_comment', 10, 3);
  */
 function sync_comment()
 {
-    if ($_GET['hacpai-api'] === 'sync-comment') {
+    if (isset($_GET['hacpai-api']) && $_GET['hacpai-api'] === 'sync-comment') {
         //判断是不是同步的接口
         if (get_option('sync_comment') == '1') {
             //开启了社区评论同步到博客
