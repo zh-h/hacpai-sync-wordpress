@@ -108,7 +108,7 @@ function sync_hacpai_commentdata2comment($comment_ID, $commentdata)
  */
 function sync_hacpai_post_article($post_id, $post)
 {
-    if (get_option('sync_hacpai_post_article') == '1') {
+    if (get_option('post_article') == '1') {
         //同步发表文章没有关闭
         $article = sync_hacpai_post2article($post);
         $data = array(
@@ -155,7 +155,7 @@ add_action('wp_insert_post', 'update_article', 10, 3);
  */
 function sync_hacpai_post_comment($comment_ID, $comment_approved, $commentdata)
 {
-    if (get_option('sync_hacpai_post_comment') == '1' && $comment_approved) {
+    if (get_option('post_comment') == '1' && $comment_approved) {
         //同步评论没有关闭
         $comment = sync_hacpai_commentdata2comment($comment_ID, $commentdata);
         $data = array(
@@ -178,7 +178,7 @@ function sync_hacpai_sync_comment()
 {
     if (isset($_GET['hacpai-api']) && $_GET['hacpai-api'] === 'sync-comment') {
         //判断是不是同步的接口
-        if (get_option('sync_hacpai_sync_comment') == '1') {
+        if (get_option('sync_comment') == '1') {
             //开启了社区评论同步到博客
             $data = json_decode(file_get_contents("php://input"));
             $comment = $data->comment;
