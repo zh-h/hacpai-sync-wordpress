@@ -1,5 +1,12 @@
 **黑客派社区实时同步插件 For Wordpress**
 
+## Introduction
+B3log is an open source community blog-forum mixer in mainland China. 
+It provides Web API to synchronize personal blogs from and to the central community server. 
+This project implements a plugin for WordPress blog which supports this kind of synchronization for common WordPress users.
+The Web API documentation can be found at [](https://hacpai.com/article/1457158841475).
+The services’ a terms of use and/or privacy policies can be found at the above link.
+
 同步您的Wordpress博客内容到黑客派社区
 
 ## Features
