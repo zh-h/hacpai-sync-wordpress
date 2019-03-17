@@ -22,7 +22,7 @@ $client = array(
     'userB3Key'   => esc_attr(get_option('key')), //在 https://hacpai.com/settings#b3 进行设置
 );
 
-class Comment
+class Sync_Hacpai_Comment
 {
     public $id;
     public $articleId;
@@ -31,7 +31,7 @@ class Comment
     public $parentId;
 }
 
-class Article
+class Sync_Hacpai_Article
 {
     public $id;
     public $title;
@@ -69,7 +69,7 @@ function sync_hacpai_logging($data, $function_name = '', $file_name = 'response.
 
 function sync_hacpai_post2article($post)
 {
-    $article = new Article();
+    $article = new Sync_Hacpai_Article();
     $article->id = $post->ID;
     $article->title = $post->post_title;
     $article->permalink = '/?p=' . $post->ID;
@@ -92,7 +92,7 @@ function sync_hacpai_post2article($post)
 
 function sync_hacpai_commentdata2comment($comment_ID, $commentdata)
 {
-    $comment = new Comment();
+    $comment = new Sync_Hacpai_Comment();
     $comment->id = $comment_ID;
     $comment->articleId = $commentdata['comment_post_ID'];
     $comment->content = $commentdata['comment_content'];
