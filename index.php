@@ -11,7 +11,7 @@ Author: zonghua, kinosang, zhaofeng-shu33
 Version: 1.30
 Author URI: http://applehater.cn/
  */
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 require 'setting.php';
 
 define('URL_ARTICLE', 'https://rhythm.b3log.org/api/article');
