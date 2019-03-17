@@ -1,14 +1,14 @@
 <?php
 
-add_action('admin_menu', 'my_plugin_menu');
+add_action('admin_menu', 'sync_hacpai_plugin_menu');
 
-function my_plugin_menu()
+function sync_hacpai_plugin_menu()
 {
-    add_menu_page('Hacpai Sync Wordpress Options', 'Hacpai Sync Wordpress Plugin', 'administrator', __FILE__, 'hacpai_sync_wordpress_setting_page', plugins_url('/images/icon.png', __FILE__));
-    add_action('admin_init', 'register_sync_setting');
+    add_menu_page('Hacpai Sync Wordpress Options', 'Hacpai Sync Wordpress Plugin', 'administrator', __FILE__, 'sync_hacpai_setting_page', plugins_url('/images/icon.png', __FILE__));
+    add_action('admin_init', 'sync_hacpai_register_sync_setting');
 }
 
-function register_sync_setting()
+function sync_hacpai_register_sync_setting()
 {
     register_setting('hacpai-sync-wordpress-setting_options_group', 'title');
     register_setting('hacpai-sync-wordpress-setting_options_group', 'host');
@@ -20,7 +20,7 @@ function register_sync_setting()
     register_setting('hacpai-sync-wordpress-setting_options_group', 'sync_comment');
 }
 
-function hacpai_sync_wordpress_setting_page()
+function sync_hacpai_setting_page()
 {
     if (!current_user_can('manage_options')) {
         wp_die(__('You do not have sufficient permissions to access this page.'));
