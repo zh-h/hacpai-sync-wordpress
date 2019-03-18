@@ -10,8 +10,8 @@ Author URI: http://applehater.cn/
 if ( ! defined( 'ABSPATH' ) ) exit;
 require 'setting.php';
 
-define('URL_ARTICLE', 'https://rhythm.b3log.org/api/article');
-define('URL_COMMENT', 'https://rhythm.b3log.org/api/comment');
+define('SYNC_HACPAI_URL_ARTICLE', 'https://rhythm.b3log.org/api/article');
+define('SYNC_HACPAI_URL_COMMENT', 'https://rhythm.b3log.org/api/comment');
 
 $client = array(
     'title' => esc_attr(get_option('title')), //博客抬头
@@ -116,7 +116,7 @@ function sync_hacpai_post_article($post_id, $post)
             'client' => $GLOBALS['client'],
         );
 
-        $response = sync_hacpai_http_post(URL_ARTICLE, json_encode($data));
+        $response = sync_hacpai_http_post(SYNC_HACPAI_URL_ARTICLE, json_encode($data));
         sync_hacpai_logging($response, 'sync_hacpai_post_article');
     }
 }
@@ -140,7 +140,7 @@ function update_article($post_id, $post, $update)
                 'article' => $article,
                 'client' => $GLOBALS['client'],
             );
-            $response = sync_hacpai_http_post(URL_ARTICLE, json_encode($data));
+            $response = sync_hacpai_http_post(SYNC_HACPAI_URL_ARTICLE, json_encode($data));
             sync_hacpai_logging($response, 'update_article');
         }
     }
@@ -162,7 +162,7 @@ function sync_hacpai_post_comment($comment_ID, $comment_approved, $commentdata)
             'comment' => $comment,
             'client' => $GLOBALS['client'],
         );
-        $response = sync_hacpai_http_post(URL_COMMENT, json_encode($data));
+        $response = sync_hacpai_http_post(SYNC_HACPAI_URL_COMMENT, json_encode($data));
         sync_hacpai_logging($response, 'sync_hacpai_post_comment');
     }
     return $commentdata;
