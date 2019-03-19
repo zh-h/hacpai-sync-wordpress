@@ -42,17 +42,10 @@ class Sync_Hacpai_Article
 
 function sync_hacpai_http_post($URL, $data)
 {
-    $ch = curl_init($URL);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);    
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Content-Type: application/json',
-        'Content-Length: ' . strlen($data)
-    ));
-    $result = curl_exec($ch);
-    return $result;
+    $result = wp_safe_remote_post($URL, array('body' => $data));
+    if(is_wp_error($result))
+        return $result->get_error_messages();
+    return $result['body'];
 }
 
 function sync_hacpai_logging($data, $function_name = '', $file_name = 'response.log')
