@@ -4,7 +4,7 @@ Plugin Name: sync-hacpai
 Plugin URI: https://github.com/zh-h/hacpai-sync-wordpress
 Description: 同步您的博客内容到黑客派社区
 Author: zonghua, kinosang, zhaofeng-shu33
-Version: 1.30
+Version: 1.40
 Author URI: http://applehater.cn/
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
