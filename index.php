@@ -48,16 +48,10 @@ function sync_hacpai_http_post($URL, $data)
     return $result['body'];
 }
 
-function sync_hacpai_logging($data, $function_name = '', $file_name = 'response.log')
+function sync_hacpai_error_logging($data, $function_name = '')
 {
-    $file_full_name = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . $file_name;
-    $content = file_get_contents($file_full_name);
-    $lines = preg_split('/\n/', $content, null);
-    if (count($lines) > 9) {
-        array_shift($lines);
-    }
-    $content = join($lines, "\n") . gmdate("M d Y H:i:s", time()) . ' @ ' . $function_name . ' : ' . $data;
-    file_put_contents($file_full_name, $content);
+    $content = gmdate("M d Y H:i:s", time()) . ' @ ' . $function_name . ' : ' . $data;
+    error_log($content);
 }
 
 function sync_hacpai_post2article($post)
@@ -110,7 +104,6 @@ function sync_hacpai_post_article($post_id, $post)
         );
 
         $response = sync_hacpai_http_post(SYNC_HACPAI_URL_ARTICLE, json_encode($data));
-        sync_hacpai_logging($response, 'sync_hacpai_post_article');
     }
 }
 
@@ -134,7 +127,6 @@ function update_article($post_id, $post, $update)
                 'client' => $GLOBALS['client'],
             );
             $response = sync_hacpai_http_post(SYNC_HACPAI_URL_ARTICLE, json_encode($data));
-            sync_hacpai_logging($response, 'update_article');
         }
     }
 }
@@ -156,7 +148,6 @@ function sync_hacpai_post_comment($comment_ID, $comment_approved, $commentdata)
             'client' => $GLOBALS['client'],
         );
         $response = sync_hacpai_http_post(SYNC_HACPAI_URL_COMMENT, json_encode($data));
-        sync_hacpai_logging($response, 'sync_hacpai_post_comment');
     }
     return $commentdata;
 }
@@ -193,14 +184,13 @@ function sync_hacpai_sync_comment()
                 );
                 //Insert new comment and get the comment ID
                 $comment_id = wp_insert_comment($commentdata);
-                sync_hacpai_logging(json_encode($commentdata), 'sync_hacpai_sync_comment');
                 exit(json_encode($comment_id));
             } else {
+                sync_hacpai_error_logging('Key not match', 'sync_hacpai_sync_comment');                
                 exit('Key not match');
-                sync_hacpai_logging('Key not match', 'sync_hacpai_sync_comment');
             }
         } else {
-            sync_hacpai_logging('Method not allowed', 'sync_hacpai_sync_comment');
+            sync_hacpai_error_logging('Method not allowed', 'sync_hacpai_sync_comment');
             exit('Method not allowed');
         }
     }

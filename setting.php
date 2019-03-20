@@ -102,13 +102,6 @@ function sync_hacpai_setting_page()
                 </tr>
                 </tbody>
             </table>
-            <h2 class="title">同步记录</h2>
-            <p>在这里可以查看最近十次的同步响应结果</p>
-            <textarea name="log" id="log" style="resize:none" class="large-text code" rows="10" readonly="true">
-                <?php
-                    echo file_get_contents(dirname(__FILE__ ).DIRECTORY_SEPARATOR.'logs'.DIRECTORY_SEPARATOR.'response.log');
-                ?>
-            </textarea>
             <?php submit_button();?>
         </form>
     </div>
