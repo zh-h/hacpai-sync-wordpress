@@ -167,7 +167,7 @@ function sync_hacpai_sync_comment()
             $data = json_decode(file_get_contents("php://input"));
             $comment = $data->comment;
             $key = $data->client->key;
-            if ($key == $GLOBALS['client']['key']) {
+            if ($key == $GLOBALS['client']['userB3Key']) {
                 //判断是否配置了正确的key
                 $commentdata = array(
                     'comment_post_ID'      => $comment->articleId,
