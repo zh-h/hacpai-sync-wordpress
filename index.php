@@ -1,21 +1,17 @@
 <?php
-/**
- * @package hacpai-sync-wordpress
- * @version 1.20
- */
 /*
-Plugin Name: Hacpai Sync Wordpress
+Plugin Name: sync-hacpai
 Plugin URI: https://github.com/zh-h/hacpai-sync-wordpress
 Description: 同步您的博客内容到黑客派社区
 Author: zonghua, kinosang, zhaofeng-shu33
-Version: 1.30
+Version: 1.40
 Author URI: http://applehater.cn/
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 require 'setting.php';
 
-define('URL_ARTICLE', 'https://rhythm.b3log.org/api/article');
-define('URL_COMMENT', 'https://rhythm.b3log.org/api/comment');
+define('SYNC_HACPAI_URL_ARTICLE', 'https://rhythm.b3log.org/api/article');
+define('SYNC_HACPAI_URL_COMMENT', 'https://rhythm.b3log.org/api/comment');
 
 $client = array(
     'title' => esc_attr(get_option('title')), //博客抬头
@@ -26,7 +22,7 @@ $client = array(
     'userB3Key'   => esc_attr(get_option('key')), //在 https://hacpai.com/settings#b3 进行设置
 );
 
-class Comment
+class Sync_Hacpai_Comment
 {
     public $id;
     public $articleId;
@@ -35,7 +31,7 @@ class Comment
     public $parentId;
 }
 
-class Article
+class Sync_Hacpai_Article
 {
     public $id;
     public $title;
@@ -44,36 +40,23 @@ class Article
     public $content;
 }
 
-function http_post($URL, $data)
+function sync_hacpai_http_post($URL, $data)
 {
-    $ch = curl_init($URL);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);    
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Content-Type: application/json',
-        'Content-Length: ' . strlen($data)
-    ));
-    $result = curl_exec($ch);
-    return $result;
+    $result = wp_safe_remote_post($URL, array('body' => $data));
+    if(is_wp_error($result))
+        return $result->get_error_messages();
+    return $result['body'];
 }
 
-function logging($data, $function_name = '', $file_name = 'response.log')
+function sync_hacpai_error_logging($data, $function_name = '')
 {
-    $file_full_name = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . $file_name;
-    $content = file_get_contents($file_full_name);
-    $lines = preg_split('/\n/', $content, null);
-    if (count($lines) > 9) {
-        array_shift($lines);
-    }
-    $content = join($lines, "\n") . gmdate("M d Y H:i:s", time()) . ' @ ' . $function_name . ' : ' . $data;
-    file_put_contents($file_full_name, $content);
+    $content = gmdate("M d Y H:i:s", time()) . ' @ ' . $function_name . ' : ' . $data;
+    error_log($content);
 }
 
-function post2article($post)
+function sync_hacpai_post2article($post)
 {
-    $article = new Article();
+    $article = new Sync_Hacpai_Article();
     $article->id = $post->ID;
     $article->title = $post->post_title;
     $article->permalink = '/?p=' . $post->ID;
@@ -94,9 +77,9 @@ function post2article($post)
     return $article;
 }
 
-function commentdata2comment($comment_ID, $commentdata)
+function sync_hacpai_commentdata2comment($comment_ID, $commentdata)
 {
-    $comment = new Comment();
+    $comment = new Sync_Hacpai_Comment();
     $comment->id = $comment_ID;
     $comment->articleId = $commentdata['comment_post_ID'];
     $comment->content = $commentdata['comment_content'];
@@ -110,22 +93,21 @@ function commentdata2comment($comment_ID, $commentdata)
  * @param  int $post_id 文章编号
  * @param  文章 $post wordpress的文章
  */
-function post_article($post_id, $post)
+function sync_hacpai_post_article($post_id, $post)
 {
     if (get_option('post_article') == '1') {
         //同步发表文章没有关闭
-        $article = post2article($post);
+        $article = sync_hacpai_post2article($post);
         $data = array(
             'article' => $article,
             'client' => $GLOBALS['client'],
         );
 
-        $response = http_post(URL_ARTICLE, json_encode($data));
-        logging($response, 'post_article');
+        $response = sync_hacpai_http_post(SYNC_HACPAI_URL_ARTICLE, json_encode($data));
     }
 }
 
-add_action('publish_post', 'post_article', 10, 2);
+add_action('publish_post', 'sync_hacpai_post_article', 10, 2);
 
 /**
  * 更新文章
@@ -139,13 +121,12 @@ function update_article($post_id, $post, $update)
         //同步更新文章没有关闭
         if ($post->post_status !== 'draft' && $post->post_status !== 'auto-draft') {
             //如果不是草稿并且不是新建文章的自动草稿
-            $article = post2article($post);
+            $article = sync_hacpai_post2article($post);
             $data = array(
                 'article' => $article,
                 'client' => $GLOBALS['client'],
             );
-            $response = http_post(URL_ARTICLE, json_encode($data));
-            logging($response, 'update_article');
+            $response = sync_hacpai_http_post(SYNC_HACPAI_URL_ARTICLE, json_encode($data));
         }
     }
 }
@@ -157,28 +138,27 @@ add_action('wp_insert_post', 'update_article', 10, 3);
  * @param  array $commentdata 回复的数据
  * @since WordPress 4.5.0 The $commentdata parameter was added.
  */
-function post_comment($comment_ID, $comment_approved, $commentdata)
+function sync_hacpai_post_comment($comment_ID, $comment_approved, $commentdata)
 {
     if (get_option('post_comment') == '1' && $comment_approved) {
         //同步评论没有关闭
-        $comment = commentdata2comment($comment_ID, $commentdata);
+        $comment = sync_hacpai_commentdata2comment($comment_ID, $commentdata);
         $data = array(
             'comment' => $comment,
             'client' => $GLOBALS['client'],
         );
-        $response = http_post(URL_COMMENT, json_encode($data));
-        logging($response, 'post_comment');
+        $response = sync_hacpai_http_post(SYNC_HACPAI_URL_COMMENT, json_encode($data));
     }
     return $commentdata;
 }
 
-add_action('comment_post', 'post_comment', 10, 3);
+add_action('comment_post', 'sync_hacpai_post_comment', 10, 3);
 
 /**
  * 黑客派同步到博客
  * 指定参数 hacpai-api = sync-comment
  */
-function sync_comment()
+function sync_hacpai_sync_comment()
 {
     if (isset($_GET['hacpai-api']) && $_GET['hacpai-api'] === 'sync-comment') {
         //判断是不是同步的接口
@@ -187,7 +167,7 @@ function sync_comment()
             $data = json_decode(file_get_contents("php://input"));
             $comment = $data->comment;
             $key = $data->client->key;
-            if ($key == $GLOBALS['client']['key']) {
+            if ($key == $GLOBALS['client']['userB3Key']) {
                 //判断是否配置了正确的key
                 $commentdata = array(
                     'comment_post_ID'      => $comment->articleId,
@@ -204,17 +184,16 @@ function sync_comment()
                 );
                 //Insert new comment and get the comment ID
                 $comment_id = wp_insert_comment($commentdata);
-                logging(json_encode($commentdata), 'sync_comment');
                 exit(json_encode($comment_id));
             } else {
+                sync_hacpai_error_logging('Key not match', 'sync_hacpai_sync_comment');                
                 exit('Key not match');
-                logging('Key not match', 'sync_comment');
             }
         } else {
-            logging('Method not allowed', 'sync_comment');
+            sync_hacpai_error_logging('Method not allowed', 'sync_hacpai_sync_comment');
             exit('Method not allowed');
         }
     }
 }
 
-add_action('template_redirect', 'sync_comment');
+add_action('template_redirect', 'sync_hacpai_sync_comment');
