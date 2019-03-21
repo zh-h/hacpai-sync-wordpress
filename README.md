@@ -1,5 +1,7 @@
 **黑客派社区实时同步插件 For Wordpress**
 
+在 WordPress 上的插件名为 [sync-hacpai](https://wordpress.org/plugins/sync-hacpai/)
+
 同步您的Wordpress博客内容到黑客派社区
 
 ## Features
